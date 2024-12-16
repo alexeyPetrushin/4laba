@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма заявки</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Общие стили */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #fff;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Стили формы */
+        form {
+            max-width: 400px;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        input, textarea, button {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        input, textarea {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+            input:focus, textarea:focus {
+                background: rgba(255, 255, 255, 0.3);
+                box-shadow: 0 0 8px #6a11cb;
+            }
+
+        button {
+            background: linear-gradient(135deg, #a4508b, #5f0a87);
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            button:hover {
+                background: linear-gradient(135deg, #6a11cb, #2575fc);
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(106, 17, 203, 0.4);
+            }
+
+            button:active {
+                transform: translateY(0);
+            }
+
+        /* Для небольших экранов */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            form {
+                padding: 15px;
+            }
+
+            input, textarea, button {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Форма заявки</h1>
+        <form id="telegramForm">
+            <input type="text" id="name" placeholder="Ваше имя" required>
+            <input type="email" id="email" placeholder="Ваш email" required>
+            <textarea id="message" placeholder="Ваше сообщение" required></textarea>
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+
+    <script>
+        // Параметры Telegram
+        const TOKEN = "7648001884:AAEnVjANaOalYZbb0d5hyhRQ3dejw5Sk48I"; // Замените на токен вашего бота
+        const CHAT_ID = "664006301"; // Замените на ваш chat ID
+        const URL_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+       
+        // Обработка отправки формы
+        $("#telegramForm").on("submit", function (e) {
+            e.preventDefault();
+
+            // Получение данных из формы
+            const name = $("#name").val().trim();
+            const email = $("#email").val().trim();
+            const message = $("#message").val().trim();
+
+            if (!name || !email || !message) {
+                alert("Пожалуйста, заполните все поля.");
+                return;
+            }
+
+            // Формирование сообщения
+            const text = `
+                    🔔 <b>Новая заявка</b>
+                    🧑 Имя: ${name}
+                    📧 Email: ${email}
+                    💬 Сообщение: ${message}
+                `;
+
+            // Отправка данных в Telegram
+            $.ajax({
+                url: URL_API,
+                method: "POST",
+                data: {
+                    chat_id: CHAT_ID,
+                    text: text,
+                    parse_mode: "HTML",
+                },
+                success: function (response) {
+                    if (response.ok) {
+                        alert("Заявка успешно отправлена!");
+                        $("#telegramForm")[0].reset();
+                    } else {
+                        alert("Ошибка отправки заявки. Попробуйте снова.");
+                    }
+                },
+                error: function () {
+                    alert("Ошибка соединения с сервером.");
+                },
+            });
+        });
+    </script>
+</body>
+</html>
